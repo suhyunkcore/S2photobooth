@@ -1,5 +1,3 @@
-let selectedFilter = "none";
-
 const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
@@ -12,18 +10,20 @@ const downloadBtn = document.getElementById("downloadBtn");
 const resetBtn = document.getElementById("resetBtn");
 const backBtn = document.getElementById("backBtn");
 
-const filterButtons = document.querySelectorAll(".filterBtn");
-let selectedFilter = "none";
 const countdown = document.getElementById("countdown");
 const photoCount = document.getElementById("photoCount");
 
+const filterButtons = document.querySelectorAll(".filterBtn");
 const frameButtons = document.querySelectorAll(".frameBtn");
 
 let photos = [];
+let selectedFilter = "none";
 let selectedFrame = "frame1.png";
-let frameImage = new Image();
-frameImage.src = selectedFrame + "?v=4";
 
+let frameImage = new Image();
+frameImage.src = selectedFrame + "?v=" + new Date().getTime();
+
+// 카메라 시작
 async function startCamera() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -38,6 +38,7 @@ async function startCamera() {
   }
 }
 
+// 비율 안 찌그러지게 그리기
 function drawImageCover(ctx, img, x, y, w, h) {
   const imgRatio = img.videoWidth / img.videoHeight;
   const boxRatio = w / h;
@@ -59,6 +60,7 @@ function drawImageCover(ctx, img, x, y, w, h) {
   ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
 }
 
+// 네컷 결과 그리기
 function drawStrip() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -75,6 +77,7 @@ function drawStrip() {
   }
 }
 
+// 사진 촬영
 function takePhoto() {
   const temp = document.createElement("canvas");
   temp.width = 500;
@@ -82,20 +85,18 @@ function takePhoto() {
 
   const tctx = temp.getContext("2d");
 
-  // 필터 먼저 적용
+  tctx.save();
+
+  // 저장 사진에도 필터 적용
   tctx.filter = selectedFilter;
 
-  // 좌우반전된 상태로 직접 그리기
-  tctx.save();
+  // 좌우 반전
   tctx.translate(temp.width, 0);
   tctx.scale(-1, 1);
 
   drawImageCover(tctx, video, 0, 0, temp.width, temp.height);
 
   tctx.restore();
-
-  // 필터 초기화
-  tctx.filter = "none";
 
   photos.push(temp);
   photoCount.innerText = photos.length + " / 4";
@@ -110,6 +111,7 @@ function takePhoto() {
   }
 }
 
+// 촬영 버튼
 captureBtn.addEventListener("click", () => {
   if (photos.length >= 4) {
     alert("4컷 촬영이 완료되었습니다.");
@@ -136,6 +138,30 @@ captureBtn.addEventListener("click", () => {
   }, 1000);
 });
 
+// 다시 찍기
+resetBtn.addEventListener("click", () => {
+  photos = [];
+  photoCount.innerText = "0 / 4";
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+});
+
+// 필터 버튼
+filterButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    selectedFilter = button.dataset.filter;
+
+    // 실시간 카메라에도 필터 적용
+    video.style.filter = selectedFilter;
+
+    filterButtons.forEach((btn) => {
+      btn.classList.remove("selected");
+    });
+
+    button.classList.add("selected");
+  });
+});
+
+// 프레임 선택
 frameButtons.forEach((button) => {
   button.addEventListener("click", () => {
     selectedFrame = button.dataset.frame;
@@ -149,19 +175,20 @@ frameButtons.forEach((button) => {
   });
 });
 
+// 저장하기
 downloadBtn.addEventListener("click", () => {
+  if (photos.length === 0) {
+    alert("먼저 사진을 촬영해주세요.");
+    return;
+  }
+
   const link = document.createElement("a");
   link.download = "my-photobooth.png";
   link.href = canvas.toDataURL("image/png");
   link.click();
 });
 
-resetBtn.addEventListener("click", () => {
-  photos = [];
-  photoCount.innerText = "0 / 4";
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-});
-
+// 다시 촬영하기
 backBtn.addEventListener("click", () => {
   photos = [];
   photoCount.innerText = "0 / 4";
@@ -176,17 +203,3 @@ frameImage.onload = () => {
 };
 
 startCamera();
-
-filterButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    selectedFilter = button.dataset.filter;
-
-    video.style.filter = selectedFilter;
-
-    filterButtons.forEach((btn) => {
-      btn.classList.remove("selected");
-    });
-
-    button.classList.add("selected");
-  });
-});
