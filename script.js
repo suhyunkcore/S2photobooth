@@ -11,7 +11,7 @@ const countdown = document.getElementById("countdown");
 let photos = [];
 
 const frameImage = new Image();
-frameImage.src = "frame.png";
+frameImage.src = "frame.png?v=3";
 
 async function startCamera() {
   try {
