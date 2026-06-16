@@ -69,7 +69,11 @@ function drawStrip() {
 
   photos.forEach((photo, index) => {
     const y = 120 + index * 375;
+
+    ctx.save();
+    ctx.filter = selectedFilter;
     ctx.drawImage(photo, 50, y, 500, 340);
+    ctx.restore();
   });
 
   if (frameImage.complete) {
