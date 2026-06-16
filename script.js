@@ -90,17 +90,14 @@ function takePhoto() {
   const tctx = temp.getContext("2d");
 
   tctx.save();
-
-  // 저장 사진에도 필터 적용
-  tctx.filter = selectedFilter;
-
-  // 좌우 반전
   tctx.translate(temp.width, 0);
   tctx.scale(-1, 1);
 
   drawImageCover(tctx, video, 0, 0, temp.width, temp.height);
 
   tctx.restore();
+
+  applyCanvasFilter(temp, selectedFilter);
 
   photos.push(temp);
   photoCount.innerText = photos.length + " / 4";
@@ -113,6 +110,71 @@ function takePhoto() {
       drawStrip();
     }, 500);
   }
+}
+
+function applyCanvasFilter(canvas, filter) {
+  const ctx = canvas.getContext("2d");
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const data = imageData.data;
+
+  let brightness = 1;
+  let contrast = 1;
+  let saturation = 1;
+  let sepia = 0;
+  let grayscale = 0;
+
+  const getValue = (name, defaultValue) => {
+    const match = filter.match(new RegExp(name + "\\((\\d+)%\\)"));
+    return match ? Number(match[1]) / 100 : defaultValue;
+  };
+
+  brightness = getValue("brightness", 1);
+  contrast = getValue("contrast", 1);
+  saturation = getValue("saturate", 1);
+  sepia = getValue("sepia", 0);
+  grayscale = getValue("grayscale", 0);
+
+  for (let i = 0; i < data.length; i += 4) {
+    let r = data[i];
+    let g = data[i + 1];
+    let b = data[i + 2];
+
+    r *= brightness;
+    g *= brightness;
+    b *= brightness;
+
+    r = (r - 128) * contrast + 128;
+    g = (g - 128) * contrast + 128;
+    b = (b - 128) * contrast + 128;
+
+    const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+
+    r = gray + (r - gray) * saturation;
+    g = gray + (g - gray) * saturation;
+    b = gray + (b - gray) * saturation;
+
+    if (grayscale > 0) {
+      r = r * (1 - grayscale) + gray * grayscale;
+      g = g * (1 - grayscale) + gray * grayscale;
+      b = b * (1 - grayscale) + gray * grayscale;
+    }
+
+    if (sepia > 0) {
+      const sr = r * 0.393 + g * 0.769 + b * 0.189;
+      const sg = r * 0.349 + g * 0.686 + b * 0.168;
+      const sb = r * 0.272 + g * 0.534 + b * 0.131;
+
+      r = r * (1 - sepia) + sr * sepia;
+      g = g * (1 - sepia) + sg * sepia;
+      b = b * (1 - sepia) + sb * sepia;
+    }
+
+    data[i] = Math.max(0, Math.min(255, r));
+    data[i + 1] = Math.max(0, Math.min(255, g));
+    data[i + 2] = Math.max(0, Math.min(255, b));
+  }
+
+  ctx.putImageData(imageData, 0, 0);
 }
 
 // 촬영 버튼
