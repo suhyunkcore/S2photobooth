@@ -84,3 +84,20 @@ canvas {
 .hidden {
   display: none;
 }
+.image-button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 8px;
+  cursor: pointer;
+}
+
+.image-button img {
+  width: 160px;
+  height: auto;
+  display: block;
+}
+
+.image-button:hover {
+  opacity: 0.85;
+}
