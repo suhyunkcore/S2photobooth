@@ -10,22 +10,21 @@ const countdown = document.getElementById("countdown");
 
 let photos = [];
 
-// 카메라 시작
+const frameImage = new Image();
+frameImage.src = "frame.png";
+
 async function startCamera() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
       video: true,
       audio: false
     });
-
     video.srcObject = stream;
   } catch (error) {
-    alert("카메라를 사용할 수 없습니다. 카메라 권한을 허용해주세요.");
-    console.error(error);
+    alert("카메라 권한을 허용해주세요.");
   }
 }
 
-// 사진 비율이 찌그러지지 않게 가운데 기준으로 자르기
 function drawImageCover(ctx, img, x, y, w, h) {
   const imgRatio = img.videoWidth / img.videoHeight;
   const boxRatio = w / h;
@@ -47,45 +46,20 @@ function drawImageCover(ctx, img, x, y, w, h) {
   ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
 }
 
-// 4컷 포토부스 그리기
 function drawStrip() {
-  ctx.fillStyle = "#f8eadc";
+  ctx.fillStyle = "#fffaf3";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  ctx.fillStyle = "#fffaf5";
-  ctx.fillRect(35, 35, 530, 1730);
-
-  ctx.strokeStyle = "#7a4a2a";
-  ctx.lineWidth = 6;
-  ctx.strokeRect(35, 35, 530, 1730);
-
-  ctx.fillStyle = "#7a4a2a";
-  ctx.font = "bold 34px Arial";
-  ctx.textAlign = "center";
-  ctx.fillText("MY PHOTO BOOTH", 300, 75);
 
   photos.forEach((photo, index) => {
     const y = 120 + index * 375;
-
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(45, y - 10, 510, 360);
-
     ctx.drawImage(photo, 50, y, 500, 340);
-
-    ctx.strokeStyle = "#d8b89a";
-    ctx.lineWidth = 4;
-    ctx.strokeRect(50, y, 500, 340);
   });
 
-  ctx.fillStyle = "#7a4a2a";
-  ctx.font = "24px Arial";
-  ctx.fillText("♡ " + new Date().toLocaleDateString() + " ♡", 300, 1685);
-
-  ctx.font = "22px Arial";
-  ctx.fillText("Faded Memories", 300, 1725);
+  if (frameImage.complete) {
+    ctx.drawImage(frameImage, 0, 0, canvas.width, canvas.height);
+  }
 }
 
-// 사진 촬영
 function takePhoto() {
   const temp = document.createElement("canvas");
   temp.width = 500;
@@ -103,7 +77,6 @@ function takePhoto() {
   drawStrip();
 }
 
-// 촬영 버튼
 captureBtn.addEventListener("click", () => {
   if (photos.length >= 4) {
     alert("4컷 촬영이 완료되었습니다.");
@@ -121,7 +94,6 @@ captureBtn.addEventListener("click", () => {
     } else {
       clearInterval(timer);
       countdown.innerText = "찰칵!";
-
       takePhoto();
 
       setTimeout(() => {
@@ -131,7 +103,6 @@ captureBtn.addEventListener("click", () => {
   }, 1000);
 });
 
-// 저장 버튼
 downloadBtn.addEventListener("click", () => {
   if (photos.length === 0) {
     alert("먼저 사진을 촬영해주세요.");
@@ -144,11 +115,13 @@ downloadBtn.addEventListener("click", () => {
   link.click();
 });
 
-// 다시찍기 버튼
 resetBtn.addEventListener("click", () => {
   photos = [];
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 });
 
-// 실행
+frameImage.onload = () => {
+  drawStrip();
+};
+
 startCamera();
