@@ -12,30 +12,75 @@ h1 {
 
 video {
   width: 90%;
-  max-width: 380px;
-  border-radius: 20px;
+  max-width: 390px;
+  border-radius: 24px;
   margin: 15px 0;
   transform: scaleX(-1);
   background: #000;
+  box-shadow: 0 8px 20px rgba(80, 45, 20, 0.25);
+}
+
+.control-box {
+  background: #fffaf5;
+  width: 90%;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 18px;
+  border-radius: 24px;
+  box-shadow: 0 6px 16px rgba(80, 45, 20, 0.15);
 }
 
 select, button {
   margin: 8px;
   padding: 12px 18px;
-  border-radius: 20px;
+  border-radius: 24px;
   border: none;
   font-size: 15px;
+}
+
+select {
+  background: white;
+  color: #4b2e1f;
 }
 
 button {
   background: #4b2e1f;
   color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.85;
+}
+
+#countdown {
+  font-size: 42px;
+  height: 50px;
+  margin: 10px;
+}
+
+#photoCount {
+  font-size: 18px;
+  font-weight: bold;
 }
 
 canvas {
   margin-top: 20px;
-  width: 260px;
+  width: 280px;
   max-width: 90%;
   background: white;
-  border-radius: 12px;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(80, 45, 20, 0.25);
+}
+
+.frame-buttons {
+  margin: 15px;
+}
+
+.frameBtn {
+  background: #a06b45;
+}
+
+.hidden {
+  display: none;
 }
