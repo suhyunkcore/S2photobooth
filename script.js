@@ -10,7 +10,8 @@ const downloadBtn = document.getElementById("downloadBtn");
 const resetBtn = document.getElementById("resetBtn");
 const backBtn = document.getElementById("backBtn");
 
-const filterSelect = document.getElementById("filterSelect");
+const filterButtons = document.querySelectorAll(".filterBtn");
+let selectedFilter = "none";
 const countdown = document.getElementById("countdown");
 const photoCount = document.getElementById("photoCount");
 
@@ -81,7 +82,7 @@ function takePhoto() {
 
   tctx.translate(temp.width, 0);
   tctx.scale(-1, 1);
-  tctx.filter = filterSelect.value;
+  tctx.filter = selectedFilter;
 
   drawImageCover(tctx, video, 0, 0, temp.width, temp.height);
 
@@ -164,3 +165,15 @@ frameImage.onload = () => {
 };
 
 startCamera();
+
+filterButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    selectedFilter = button.dataset.filter;
+
+    filterButtons.forEach((btn) => {
+      btn.classList.remove("selected");
+    });
+
+    button.classList.add("selected");
+  });
+});
