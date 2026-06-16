@@ -17,7 +17,7 @@ const filterButtons = document.querySelectorAll(".filterBtn");
 const frameButtons = document.querySelectorAll(".frameBtn");
 
 let photos = [];
-let selectedFilter = "none";
+let selectedFilter = "filter1";
 let selectedFrame = "frame1.png";
 
 let frameImage = new Image();
@@ -30,10 +30,28 @@ async function startCamera() {
       audio: false
     });
     video.srcObject = stream;
+
+    video.style.filter = getCssFilter(selectedFilter);
   } catch (error) {
     alert("카메라 권한을 허용해주세요.");
     console.error(error);
   }
+}
+
+function getCssFilter(filterName) {
+  if (filterName === "filter1") {
+    return "brightness(130%) contrast(100%) saturate(80%) blur(0.3px)";
+  }
+
+  if (filterName === "filter2") {
+    return "sepia(10%) brightness(130%) contrast(120%) saturate(90%)";
+  }
+
+  if (filterName === "filter3") {
+    return "brightness(130%) contrast(100%) saturate(67%) hue-rotate(-7deg)";
+  }
+
+  return "none";
 }
 
 function drawImageCover(ctx, img, x, y, w, h) {
@@ -65,11 +83,12 @@ function takePhoto() {
   const tctx = temp.getContext("2d");
 
   tctx.save();
-  tctx.filter = selectedFilter;
   tctx.translate(temp.width, 0);
   tctx.scale(-1, 1);
   drawImageCover(tctx, video, 0, 0, temp.width, temp.height);
   tctx.restore();
+
+  applyPixelFilter(temp, selectedFilter);
 
   photos.push(temp);
   photoCount.innerText = photos.length + " / 4";
@@ -82,6 +101,99 @@ function takePhoto() {
       drawStrip();
     }, 500);
   }
+}
+
+function applyPixelFilter(canvas, filterName) {
+  const c = canvas.getContext("2d");
+  const imageData = c.getImageData(0, 0, canvas.width, canvas.height);
+  const data = imageData.data;
+
+  let brightness = 1;
+  let contrast = 1;
+  let saturation = 1;
+  let sepia = 0;
+  let hueRotate = 0;
+
+  if (filterName === "filter1") {
+    brightness = 1.3;
+    contrast = 1;
+    saturation = 0.8;
+  }
+
+  if (filterName === "filter2") {
+    brightness = 1.3;
+    contrast = 1.2;
+    saturation = 0.9;
+    sepia = 0.1;
+  }
+
+  if (filterName === "filter3") {
+    brightness = 1.3;
+    contrast = 1;
+    saturation = 0.67;
+    hueRotate = -7;
+  }
+
+  for (let i = 0; i < data.length; i += 4) {
+    let r = data[i];
+    let g = data[i + 1];
+    let b = data[i + 2];
+
+    r *= brightness;
+    g *= brightness;
+    b *= brightness;
+
+    r = (r - 128) * contrast + 128;
+    g = (g - 128) * contrast + 128;
+    b = (b - 128) * contrast + 128;
+
+    const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+
+    r = gray + (r - gray) * saturation;
+    g = gray + (g - gray) * saturation;
+    b = gray + (b - gray) * saturation;
+
+    if (sepia > 0) {
+      const sr = r * 0.393 + g * 0.769 + b * 0.189;
+      const sg = r * 0.349 + g * 0.686 + b * 0.168;
+      const sb = r * 0.272 + g * 0.534 + b * 0.131;
+
+      r = r * (1 - sepia) + sr * sepia;
+      g = g * (1 - sepia) + sg * sepia;
+      b = b * (1 - sepia) + sb * sepia;
+    }
+
+    if (hueRotate !== 0) {
+      const angle = hueRotate * Math.PI / 180;
+      const cosA = Math.cos(angle);
+      const sinA = Math.sin(angle);
+
+      const nr =
+        r * (0.213 + cosA * 0.787 - sinA * 0.213) +
+        g * (0.715 - cosA * 0.715 - sinA * 0.715) +
+        b * (0.072 - cosA * 0.072 + sinA * 0.928);
+
+      const ng =
+        r * (0.213 - cosA * 0.213 + sinA * 0.143) +
+        g * (0.715 + cosA * 0.285 + sinA * 0.140) +
+        b * (0.072 - cosA * 0.072 - sinA * 0.283);
+
+      const nb =
+        r * (0.213 - cosA * 0.213 - sinA * 0.787) +
+        g * (0.715 - cosA * 0.715 + sinA * 0.715) +
+        b * (0.072 + cosA * 0.928 + sinA * 0.072);
+
+      r = nr;
+      g = ng;
+      b = nb;
+    }
+
+    data[i] = Math.max(0, Math.min(255, r));
+    data[i + 1] = Math.max(0, Math.min(255, g));
+    data[i + 2] = Math.max(0, Math.min(255, b));
+  }
+
+  c.putImageData(imageData, 0, 0);
 }
 
 function drawStrip() {
@@ -132,10 +244,10 @@ resetBtn.addEventListener("click", () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 });
 
-filterButtons.forEach((button) => {
+filterButtons.forEach((button, index) => {
   button.addEventListener("click", () => {
-    selectedFilter = button.dataset.filter;
-    video.style.filter = selectedFilter;
+    selectedFilter = "filter" + (index + 1);
+    video.style.filter = getCssFilter(selectedFilter);
 
     filterButtons.forEach((btn) => btn.classList.remove("selected"));
     button.classList.add("selected");
@@ -160,6 +272,8 @@ downloadBtn.addEventListener("click", () => {
     alert("먼저 사진을 촬영해주세요.");
     return;
   }
+
+  drawStrip();
 
   const link = document.createElement("a");
   link.download = "my-photobooth.png";
