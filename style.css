@@ -121,16 +121,14 @@ canvas {
 
 .filterBtn img {
   width: 90px;
-  height: 90px;
-  object-fit: cover;
-  border-radius: 8px;
+  height: auto;
   display: block;
 }
 
-.filterBtn.selected img {
-  outline: 4px solid #bfa7ff;
-  outline-offset: 8px;
-  border-radius: 8px;
+.filterBtn.selected {
+  border: 4px solid #8f6d5a;
+  border-radius: 18px;
+  padding: 12px;
 }
 
 .main-title {
