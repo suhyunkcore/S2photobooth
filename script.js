@@ -170,6 +170,8 @@ filterButtons.forEach((button) => {
   button.addEventListener("click", () => {
     selectedFilter = button.dataset.filter;
 
+    video.style.filter = selectedFilter;
+
     filterButtons.forEach((btn) => {
       btn.classList.remove("selected");
     });
