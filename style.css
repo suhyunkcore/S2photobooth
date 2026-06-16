@@ -137,3 +137,7 @@ canvas {
   letter-spacing: 1px;
   color: #4b2e1f;
 }
+
+#cameraScreen {
+  padding-top: 80px;
+}
