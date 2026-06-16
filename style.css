@@ -101,3 +101,30 @@ canvas {
 .image-button:hover {
   opacity: 0.85;
 }
+
+.filter-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 170px;
+  margin-bottom: 85px;
+  flex-wrap: wrap;
+}
+
+.filterBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.filterBtn img {
+  width: 300px;
+  height: auto;
+  display: block;
+}
+
+.filterBtn.selected img {
+  outline: 4px solid #bfa7ff;
+  outline-offset: 8px;
+  border-radius: 8px;
+}
