@@ -12,14 +12,19 @@
 
     <video id="video" autoplay playsinline></video>
 
-    <div class="control-box">
-      <select id="filterSelect">
-        <option value="none">기본</option>
-        <option value="grayscale(100%)">흑백</option>
-        <option value="sepia(60%) contrast(110%)">빈티지</option>
-        <option value="brightness(120%)">밝게</option>
-        <option value="contrast(130%)">선명하게</option>
-      </select>
+    <div class="filter-buttons">
+      <button class="filterBtn selected" data-filter="none">
+       <img src="filter-basic.png" alt="기본 필터">
+     </button>
+
+     <button class="filterBtn" data-filter="grayscale(100%)">
+      <img src="filter-bw.png" alt="흑백 필터">
+     </button>
+
+     <button class="filterBtn" data-filter="sepia(60%) contrast(110%) brightness(105%)">
+       <img src="filter-vintage.png" alt="빈티지 필터">
+      </button>
+     </div>
 
       <h2 id="countdown"></h2>
 
