@@ -1,3 +1,19 @@
+function getCssFilter(filterName) {
+  if (filterName === "filter1") {
+    return "brightness(130%) contrast(100%) saturate(80%)";
+  }
+
+  if (filterName === "filter2") {
+    return "sepia(10%) brightness(130%) contrast(120%) saturate(90%)";
+  }
+
+  if (filterName === "filter3") {
+    return "brightness(130%) contrast(100%) saturate(67%) hue-rotate(-7deg)";
+  }
+
+  return "none";
+}
+
 const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
@@ -244,9 +260,10 @@ resetBtn.addEventListener("click", () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 });
 
-filterButtons.forEach((button, index) => {
+filterButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    selectedFilter = "filter" + (index + 1);
+    selectedFilter = button.dataset.filter;
+
     video.style.filter = getCssFilter(selectedFilter);
 
     filterButtons.forEach((btn) => btn.classList.remove("selected"));
