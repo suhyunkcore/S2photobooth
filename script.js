@@ -1,3 +1,5 @@
+let selectedFilter = "none";
+
 const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
@@ -80,11 +82,18 @@ function takePhoto() {
 
   const tctx = temp.getContext("2d");
 
+  // 좌우 반전
   tctx.translate(temp.width, 0);
   tctx.scale(-1, 1);
+
+  // 선택한 필터를 캔버스에도 적용
   tctx.filter = selectedFilter;
 
+  // 비율 안 찌그러지게 촬영
   drawImageCover(tctx, video, 0, 0, temp.width, temp.height);
+
+  // 필터 초기화
+  tctx.filter = "none";
 
   photos.push(temp);
   photoCount.innerText = photos.length + " / 4";
