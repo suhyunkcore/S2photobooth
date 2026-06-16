@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>My Photo Booth</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>My Photo Booth</h1>
+
+  <video id="video" autoplay playsinline></video>
+
+  <div>
+    <select id="filterSelect">
+      <option value="none">기본</option>
+      <option value="grayscale(100%)">흑백</option>
+      <option value="sepia(60%)">빈티지</option>
+      <option value="brightness(120%)">밝게</option>
+      <option value="contrast(130%)">선명하게</option>
+    </select>
+  </div>
+
+  <h2 id="countdown"></h2>
+
+  <button id="captureBtn">촬영하기</button>
+  <button id="downloadBtn">저장하기</button>
+  <button id="resetBtn">다시찍기</button>
+
+  <canvas id="canvas" width="600" height="1800"></canvas>
+
+  <script src="script.js"></script>
+</body>
+</html>
