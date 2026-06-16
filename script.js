@@ -2,16 +2,24 @@ const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
+const cameraScreen = document.getElementById("cameraScreen");
+const resultScreen = document.getElementById("resultScreen");
+
 const captureBtn = document.getElementById("captureBtn");
 const downloadBtn = document.getElementById("downloadBtn");
 const resetBtn = document.getElementById("resetBtn");
+const backBtn = document.getElementById("backBtn");
+
 const filterSelect = document.getElementById("filterSelect");
 const countdown = document.getElementById("countdown");
+const photoCount = document.getElementById("photoCount");
+
+const frameButtons = document.querySelectorAll(".frameBtn");
 
 let photos = [];
-
-const frameImage = new Image();
-frameImage.src = "frame.png?v=3";
+let selectedFrame = "frame1.png";
+let frameImage = new Image();
+frameImage.src = selectedFrame + "?v=4";
 
 async function startCamera() {
   try {
@@ -19,9 +27,11 @@ async function startCamera() {
       video: true,
       audio: false
     });
+
     video.srcObject = stream;
   } catch (error) {
     alert("카메라 권한을 허용해주세요.");
+    console.error(error);
   }
 }
 
@@ -47,6 +57,8 @@ function drawImageCover(ctx, img, x, y, w, h) {
 }
 
 function drawStrip() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
   ctx.fillStyle = "#fffaf3";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -74,7 +86,16 @@ function takePhoto() {
   drawImageCover(tctx, video, 0, 0, temp.width, temp.height);
 
   photos.push(temp);
+  photoCount.innerText = photos.length + " / 4";
   drawStrip();
+
+  if (photos.length === 4) {
+    setTimeout(() => {
+      cameraScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+      drawStrip();
+    }, 500);
+  }
 }
 
 captureBtn.addEventListener("click", () => {
@@ -103,12 +124,20 @@ captureBtn.addEventListener("click", () => {
   }, 1000);
 });
 
-downloadBtn.addEventListener("click", () => {
-  if (photos.length === 0) {
-    alert("먼저 사진을 촬영해주세요.");
-    return;
-  }
+frameButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    selectedFrame = button.dataset.frame;
 
+    frameImage = new Image();
+    frameImage.src = selectedFrame + "?v=" + new Date().getTime();
+
+    frameImage.onload = () => {
+      drawStrip();
+    };
+  });
+});
+
+downloadBtn.addEventListener("click", () => {
   const link = document.createElement("a");
   link.download = "my-photobooth.png";
   link.href = canvas.toDataURL("image/png");
@@ -117,7 +146,17 @@ downloadBtn.addEventListener("click", () => {
 
 resetBtn.addEventListener("click", () => {
   photos = [];
+  photoCount.innerText = "0 / 4";
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+});
+
+backBtn.addEventListener("click", () => {
+  photos = [];
+  photoCount.innerText = "0 / 4";
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  resultScreen.classList.add("hidden");
+  cameraScreen.classList.remove("hidden");
 });
 
 frameImage.onload = () => {
