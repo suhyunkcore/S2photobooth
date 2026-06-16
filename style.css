@@ -130,3 +130,10 @@ canvas {
   outline-offset: 8px;
   border-radius: 8px;
 }
+
+.main-title {
+  font-size: 32px;
+  font-weight: normal;
+  letter-spacing: 1px;
+  color: #4b2e1f;
+}
