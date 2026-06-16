@@ -13,36 +13,30 @@
     <video id="video" autoplay playsinline></video>
 
     <div class="filter-buttons">
+      <button class="filterBtn selected" data-filter="brightness(130%) contrast(100%) saturate(80%) blur(0.3px)">
+        <img src="filter1.png">
+      </button>
 
-     <button class="filterBtn selected" data-filter="brightness(130%) contrast(100%) saturate(80%) blur(0.3px)">
-      <img src="filter1.png">
-     </button>
+      <button class="filterBtn" data-filter="sepia(10%) brightness(130%) contrast(120%) saturate(90%)">
+        <img src="filter2.png">
+      </button>
 
-     <button class="filterBtn" data-filter="sepia(10%) brightness(130%) contrast(120%) saturate(90%) ">
-      <img src="filter2.png">
-     </button>
-
-     <button class="filterBtn" data-filter="brightness(130%) contrast(100%) saturate(67%) hue-rotate(-7deg)">
-      <img src="filter3.png">
-     </button>
-
+      <button class="filterBtn" data-filter="brightness(130%) contrast(100%) saturate(67%) hue-rotate(-7deg)">
+        <img src="filter3.png">
+      </button>
     </div>
 
-<div class="control-buttons">
+    <div class="control-buttons">
+      <button id="captureBtn" class="image-button">
+        <img src="shoot-btn.png">
+      </button>
 
-  <button id="captureBtn" class="image-button">
-    <img src="shoot-btn.png">
-  </button>
+      <button id="resetBtn" class="image-button">
+        <img src="reset-btn.png">
+      </button>
+    </div>
 
-  <button id="resetBtn" class="image-button">
-    <img src="reset-btn.png">
-  </button>
-
-</div>
-
-</div>
-
-      <h2 id="countdown"></h2>
+    <h2 id="countdown"></h2>
 
     <p id="photoCount">0 / 4</p>
   </section>
@@ -64,6 +58,6 @@
     <button id="backBtn">다시 촬영하기</button>
   </section>
 
-  <script src="script.js?v=12"></script>
+  <script src="script.js?v=14"></script>
 </body>
 </html>
