@@ -141,3 +141,17 @@ canvas {
 #cameraScreen {
   padding-top: 80px;
 }
+
+.camera-layout {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.control-buttons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+}
