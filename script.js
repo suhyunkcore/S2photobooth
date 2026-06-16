@@ -82,15 +82,17 @@ function takePhoto() {
 
   const tctx = temp.getContext("2d");
 
-  // 좌우 반전
+  // 필터 먼저 적용
+  tctx.filter = selectedFilter;
+
+  // 좌우반전된 상태로 직접 그리기
+  tctx.save();
   tctx.translate(temp.width, 0);
   tctx.scale(-1, 1);
 
-  // 선택한 필터를 캔버스에도 적용
-  tctx.filter = selectedFilter;
-
-  // 비율 안 찌그러지게 촬영
   drawImageCover(tctx, video, 0, 0, temp.width, temp.height);
+
+  tctx.restore();
 
   // 필터 초기화
   tctx.filter = "none";
