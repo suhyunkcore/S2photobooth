@@ -21,16 +21,14 @@ let selectedFilter = "none";
 let selectedFrame = "frame1.png";
 
 let frameImage = new Image();
-frameImage.src = selectedFrame + "?v=" + new Date().getTime();
+frameImage.src = selectedFrame + "?v=" + Date.now();
 
-// 카메라 시작
 async function startCamera() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
       video: true,
       audio: false
     });
-
     video.srcObject = stream;
   } catch (error) {
     alert("카메라 권한을 허용해주세요.");
@@ -38,7 +36,6 @@ async function startCamera() {
   }
 }
 
-// 비율 안 찌그러지게 그리기
 function drawImageCover(ctx, img, x, y, w, h) {
   const imgRatio = img.videoWidth / img.videoHeight;
   const boxRatio = w / h;
@@ -60,28 +57,6 @@ function drawImageCover(ctx, img, x, y, w, h) {
   ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
 }
 
-// 네컷 결과 그리기
-function drawStrip() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  ctx.fillStyle = "#fffaf3";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  photos.forEach((photo, index) => {
-    const y = 120 + index * 375;
-
-    ctx.save();
-    ctx.filter = selectedFilter;
-    ctx.drawImage(photo, 50, y, 500, 340);
-    ctx.restore();
-  });
-
-  if (frameImage.complete) {
-    ctx.drawImage(frameImage, 0, 0, canvas.width, canvas.height);
-  }
-}
-
-// 사진 촬영
 function takePhoto() {
   const temp = document.createElement("canvas");
   temp.width = 500;
@@ -90,14 +65,11 @@ function takePhoto() {
   const tctx = temp.getContext("2d");
 
   tctx.save();
+  tctx.filter = selectedFilter;
   tctx.translate(temp.width, 0);
   tctx.scale(-1, 1);
-
   drawImageCover(tctx, video, 0, 0, temp.width, temp.height);
-
   tctx.restore();
-
-  applyCanvasFilter(temp, selectedFilter);
 
   photos.push(temp);
   photoCount.innerText = photos.length + " / 4";
@@ -112,72 +84,22 @@ function takePhoto() {
   }
 }
 
-function applyCanvasFilter(canvas, filter) {
-  const ctx = canvas.getContext("2d");
-  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  const data = imageData.data;
+function drawStrip() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  let brightness = 1;
-  let contrast = 1;
-  let saturation = 1;
-  let sepia = 0;
-  let grayscale = 0;
+  ctx.fillStyle = "#fffaf3";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  const getValue = (name, defaultValue) => {
-    const match = filter.match(new RegExp(name + "\\((\\d+)%\\)"));
-    return match ? Number(match[1]) / 100 : defaultValue;
-  };
+  photos.forEach((photo, index) => {
+    const y = 120 + index * 375;
+    ctx.drawImage(photo, 50, y, 500, 340);
+  });
 
-  brightness = getValue("brightness", 1);
-  contrast = getValue("contrast", 1);
-  saturation = getValue("saturate", 1);
-  sepia = getValue("sepia", 0);
-  grayscale = getValue("grayscale", 0);
-
-  for (let i = 0; i < data.length; i += 4) {
-    let r = data[i];
-    let g = data[i + 1];
-    let b = data[i + 2];
-
-    r *= brightness;
-    g *= brightness;
-    b *= brightness;
-
-    r = (r - 128) * contrast + 128;
-    g = (g - 128) * contrast + 128;
-    b = (b - 128) * contrast + 128;
-
-    const gray = 0.299 * r + 0.587 * g + 0.114 * b;
-
-    r = gray + (r - gray) * saturation;
-    g = gray + (g - gray) * saturation;
-    b = gray + (b - gray) * saturation;
-
-    if (grayscale > 0) {
-      r = r * (1 - grayscale) + gray * grayscale;
-      g = g * (1 - grayscale) + gray * grayscale;
-      b = b * (1 - grayscale) + gray * grayscale;
-    }
-
-    if (sepia > 0) {
-      const sr = r * 0.393 + g * 0.769 + b * 0.189;
-      const sg = r * 0.349 + g * 0.686 + b * 0.168;
-      const sb = r * 0.272 + g * 0.534 + b * 0.131;
-
-      r = r * (1 - sepia) + sr * sepia;
-      g = g * (1 - sepia) + sg * sepia;
-      b = b * (1 - sepia) + sb * sepia;
-    }
-
-    data[i] = Math.max(0, Math.min(255, r));
-    data[i + 1] = Math.max(0, Math.min(255, g));
-    data[i + 2] = Math.max(0, Math.min(255, b));
+  if (frameImage.complete) {
+    ctx.drawImage(frameImage, 0, 0, canvas.width, canvas.height);
   }
-
-  ctx.putImageData(imageData, 0, 0);
 }
 
-// 촬영 버튼
 captureBtn.addEventListener("click", () => {
   if (photos.length >= 4) {
     alert("4컷 촬영이 완료되었습니다.");
@@ -204,36 +126,28 @@ captureBtn.addEventListener("click", () => {
   }, 1000);
 });
 
-// 다시 찍기
 resetBtn.addEventListener("click", () => {
   photos = [];
   photoCount.innerText = "0 / 4";
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 });
 
-// 필터 버튼
 filterButtons.forEach((button) => {
   button.addEventListener("click", () => {
     selectedFilter = button.dataset.filter;
-
-    // 실시간 카메라에도 필터 적용
     video.style.filter = selectedFilter;
 
-    filterButtons.forEach((btn) => {
-      btn.classList.remove("selected");
-    });
-
+    filterButtons.forEach((btn) => btn.classList.remove("selected"));
     button.classList.add("selected");
   });
 });
 
-// 프레임 선택
 frameButtons.forEach((button) => {
   button.addEventListener("click", () => {
     selectedFrame = button.dataset.frame;
 
     frameImage = new Image();
-    frameImage.src = selectedFrame + "?v=" + new Date().getTime();
+    frameImage.src = selectedFrame + "?v=" + Date.now();
 
     frameImage.onload = () => {
       drawStrip();
@@ -241,7 +155,6 @@ frameButtons.forEach((button) => {
   });
 });
 
-// 저장하기
 downloadBtn.addEventListener("click", () => {
   if (photos.length === 0) {
     alert("먼저 사진을 촬영해주세요.");
@@ -254,7 +167,6 @@ downloadBtn.addEventListener("click", () => {
   link.click();
 });
 
-// 다시 촬영하기
 backBtn.addEventListener("click", () => {
   photos = [];
   photoCount.innerText = "0 / 4";
