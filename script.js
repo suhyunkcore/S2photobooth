@@ -4,11 +4,11 @@ function getCssFilter(filterName) {
   }
 
   if (filterName === "filter2") {
-    return "sepia(10%) brightness(130%) contrast(120%) saturate(90%)";
+    return "sepia(10%) brightness(120%) contrast(115%) saturate(90%)";
   }
 
   if (filterName === "filter3") {
-    return "brightness(115%) contrast(100%) saturate(67%) hue-rotate(-7deg)";
+    return "brightness(115%) contrast(95%) saturate(67%) hue-rotate(-7deg)";
   }
 
   return "none";
