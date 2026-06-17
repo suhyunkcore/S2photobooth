@@ -315,8 +315,8 @@ frameImage.onload = () => {
 startCamera();
 
 clearFilterBtn.addEventListener("click", () => {
-  selectedFilter = "none";
-  video.style.filter = "none";
+  selectedFilter = "brightness(110%)";
+  video.style.filter = "brightness(110%)";
 
   filterButtons.forEach((btn) => {
     btn.classList.remove("selected");
