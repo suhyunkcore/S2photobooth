@@ -24,6 +24,7 @@ const resultScreen = document.getElementById("resultScreen");
 const captureBtn = document.getElementById("captureBtn");
 const downloadBtn = document.getElementById("downloadBtn");
 const resetBtn = document.getElementById("resetBtn");
+const clearFilterBtn = document.getElementById("clearFilterBtn");
 const backBtn = document.getElementById("backBtn");
 
 const countdown = document.getElementById("countdown");
@@ -312,3 +313,12 @@ frameImage.onload = () => {
 };
 
 startCamera();
+
+clearFilterBtn.addEventListener("click", () => {
+  selectedFilter = "none";
+  video.style.filter = "none";
+
+  filterButtons.forEach((btn) => {
+    btn.classList.remove("selected");
+  });
+});
