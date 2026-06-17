@@ -8,7 +8,7 @@ function getCssFilter(filterName) {
   }
 
   if (filterName === "filter3") {
-    return "brightness(115%) contrast(95%) saturate(67%) hue-rotate(-7deg)";
+    return "brightness(110%) contrast(90%) saturate(67%) hue-rotate(-7deg)";
   }
 
   return "none";
